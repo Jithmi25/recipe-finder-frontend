@@ -6,6 +6,13 @@
       <div v-if="isLoading" class="loading">Loading recipe details...</div>
       <div v-else-if="error" class="error">{{ error }}</div>
       <div v-else-if="recipe" class="content">
+        <img
+          v-if="recipeImage"
+          :src="recipeImage"
+          :alt="recipe.title"
+          class="hero-image"
+        />
+
         <header class="top">
           <h2>{{ recipe.title }}</h2>
           <div class="top-actions">
@@ -57,7 +64,9 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from "vue";
+
+const props = defineProps({
   open: {
     type: Boolean,
     default: false,
@@ -79,6 +88,16 @@ defineProps({
     default: false,
   },
 });
+
+const recipeImage = computed(
+  () =>
+    props.recipe?.image_url ||
+    props.recipe?.image ||
+    props.recipe?.imageUrl ||
+    props.recipe?.thumbnail_url ||
+    props.recipe?.thumbnail ||
+    "",
+);
 
 defineEmits(["close", "toggle-favorite", "share"]);
 </script>
@@ -102,6 +121,14 @@ defineEmits(["close", "toggle-favorite", "share"]);
   border-radius: 16px;
   padding: 22px;
   position: relative;
+}
+
+.hero-image {
+  width: 100%;
+  max-height: 280px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 14px;
 }
 
 .close-btn {

@@ -1,5 +1,13 @@
 <template>
   <div class="recipe-card" @click="onSelect">
+    <img
+      v-if="recipeImage"
+      :src="recipeImage"
+      :alt="recipe.title"
+      class="recipe-image"
+      loading="lazy"
+    />
+
     <div class="recipe-header">
       <h3>{{ recipe.title }}</h3>
       <div v-if="recipe.diet_types" class="diet-tags">
@@ -57,6 +65,16 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["select", "toggle-favorite"]);
+
+const recipeImage = computed(
+  () =>
+    props.recipe.image_url ||
+    props.recipe.image ||
+    props.recipe.imageUrl ||
+    props.recipe.thumbnail_url ||
+    props.recipe.thumbnail ||
+    "",
+);
 
 function onSelect() {
   emit("select", props.recipe.id);
@@ -118,6 +136,13 @@ const ingredientsPreview = computed(() => {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.recipe-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
 }
 
 .recipe-card:hover {

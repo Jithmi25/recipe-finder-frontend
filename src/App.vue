@@ -1,16 +1,27 @@
 <template>
   <div class="app-shell">
     <section v-if="!authStore.isAuthenticated" class="auth-card">
-      <p class="kicker">Google Login Required</p>
-      <h1>Recipe Finder</h1>
-      <p class="subtitle">
-        Sign in with Google to search, save, and share recipes.
-      </p>
-      <div v-if="authStore.error" class="alert">{{ authStore.error }}</div>
-      <div v-if="!hasGoogleClientId" class="alert warning">
-        Missing VITE_GOOGLE_CLIENT_ID in frontend env.
+      <div class="auth-layout">
+        <div class="auth-copy">
+          <img src="/logo.png" alt="Recipe Finder logo" class="brand-logo" />
+          <h1>Recipe Finder</h1>
+          <p class="subtitle">
+            Sign in with Google to search, save, and share recipes.
+          </p>
+          <div v-if="authStore.error" class="alert">{{ authStore.error }}</div>
+          <div v-if="!hasGoogleClientId" class="alert warning">
+            Missing VITE_GOOGLE_CLIENT_ID in frontend env.
+          </div>
+          <div id="google-signin-button" class="google-button-slot"></div>
+        </div>
+
+        <div class="auth-media">
+          <video class="login-video" autoplay muted loop playsinline>
+            <source src="/login.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
       </div>
-      <div id="google-signin-button" class="google-button-slot"></div>
     </section>
 
     <section v-else class="app-card">
@@ -38,6 +49,10 @@
 
       <h1 class="title">Recipe Finder</h1>
 
+      <div v-if="searchStore.favoritesError" class="alert warning">
+        {{ searchStore.favoritesError }}
+      </div>
+
       <div class="tabs">
         <button
           :class="['tab', { active: activeTab === 'explore' }]"
@@ -50,6 +65,19 @@
           @click="activeTab = 'saved'"
         >
           Saved Recipes
+        </button>
+      </div>
+
+      <div v-if="activeTab === 'saved'" class="saved-toolbar">
+        <span class="saved-toolbar-label"
+          >Saved {{ searchStore.favorites.length }} recipe(s)</span
+        >
+        <button
+          class="clear-saved-btn"
+          :disabled="searchStore.favorites.length === 0"
+          @click="clearSavedRecipes"
+        >
+          Clear saved
         </button>
       </div>
 
@@ -210,6 +238,10 @@ async function onToggleFavorite(recipeId) {
   await searchStore.toggleFavorite(recipeId);
 }
 
+async function clearSavedRecipes() {
+  await searchStore.clearFavorites();
+}
+
 async function onShare(recipe) {
   const shareText = `${recipe.title} - ${recipe.description || "Recipe from Recipe Finder"}`;
 
@@ -303,8 +335,43 @@ onMounted(async () => {
 }
 
 .auth-card {
-  max-width: 520px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.auth-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  min-height: 560px;
+}
+
+.auth-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 40px;
   text-align: center;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.brand-logo {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  margin: 0 auto 18px;
+}
+
+.auth-media {
+  min-height: 100%;
+  background: #0f172a;
+}
+
+.login-video {
+  width: 100%;
+  height: 100%;
+  min-height: 560px;
+  display: block;
+  object-fit: cover;
 }
 
 .kicker {
@@ -395,6 +462,38 @@ h2 {
   margin-bottom: 14px;
 }
 
+.saved-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #f8fafc;
+}
+
+.saved-toolbar-label {
+  color: #475569;
+  font-weight: 600;
+}
+
+.clear-saved-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 8px 14px;
+  background: #ef4444;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.clear-saved-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .tab {
   border: 1px solid #cbd5e1;
   background: #f8fafc;
@@ -445,9 +544,29 @@ h2 {
 }
 
 @media (max-width: 700px) {
-  .auth-card,
+  .auth-card {
+    padding: 0;
+  }
+
   .app-card {
     padding: 22px;
+  }
+
+  .auth-layout {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .auth-copy {
+    padding: 24px 20px 28px;
+  }
+
+  .auth-media {
+    order: -1;
+  }
+
+  .login-video {
+    min-height: 240px;
   }
 
   .app-header {
@@ -457,6 +576,11 @@ h2 {
 
   .recipes-grid {
     grid-template-columns: 1fr;
+  }
+
+  .saved-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .title {

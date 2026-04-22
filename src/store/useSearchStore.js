@@ -22,6 +22,7 @@ export const useSearchStore = defineStore("search", {
     isDetailLoading: false,
     error: "",
     detailError: "",
+    favoritesError: "",
     searchHistory: JSON.parse(localStorage.getItem("searchHistory") || "[]"),
     lastSearch: null,
   }),
@@ -43,6 +44,32 @@ export const useSearchStore = defineStore("search", {
       this.detailError = "";
     },
 
+    clearFavoritesError() {
+      this.favoritesError = "";
+    },
+
+    resolveRecipeImage(recipe) {
+      return (
+        recipe?.image_url ||
+        recipe?.image ||
+        recipe?.imageUrl ||
+        recipe?.thumbnail_url ||
+        recipe?.thumbnail ||
+        ""
+      );
+    },
+
+    normalizeRecipe(recipe) {
+      if (!recipe || typeof recipe !== "object") {
+        return recipe;
+      }
+
+      return {
+        ...recipe,
+        image_url: this.resolveRecipeImage(recipe),
+      };
+    },
+
     setSelectedDiets(diets) {
       this.selectedDiets = diets;
       this.currentPage = 0;
@@ -55,6 +82,11 @@ export const useSearchStore = defineStore("search", {
         this.searchHistory.pop();
       }
       localStorage.setItem("searchHistory", JSON.stringify(this.searchHistory));
+    },
+
+    clearSearchHistory() {
+      this.searchHistory = [];
+      localStorage.removeItem("searchHistory");
     },
 
     goToPage(pageNo) {
@@ -93,26 +125,60 @@ export const useSearchStore = defineStore("search", {
       if (!authStore.token) {
         this.favorites = [];
         this.favoriteRecipeIds = [];
+        this.clearFavoritesError();
         return;
       }
 
       try {
-        const [favoritesRes, idsRes] = await Promise.all([
-          axios.get(`${API_BASE_URL}/api/recipes/favorites`, {
+        const favoritesRes = await axios.get(
+          `${API_BASE_URL}/api/recipes/favorites`,
+          {
             headers: {
               Authorization: `Bearer ${authStore.token}`,
             },
-          }),
-          axios.get(`${API_BASE_URL}/api/recipes/favorites/ids`, {
-            headers: {
-              Authorization: `Bearer ${authStore.token}`,
-            },
-          }),
-        ]);
+          },
+        );
 
-        this.favorites = favoritesRes.data;
-        this.favoriteRecipeIds = idsRes.data.recipeIds;
+        const favoritesPayload = Array.isArray(favoritesRes.data)
+          ? favoritesRes.data
+          : Array.isArray(favoritesRes.data?.data)
+            ? favoritesRes.data.data
+            : [];
+
+        this.favorites = favoritesPayload.map((recipe) =>
+          this.normalizeRecipe(recipe),
+        );
+
+        try {
+          const idsRes = await axios.get(
+            `${API_BASE_URL}/api/recipes/favorites/ids`,
+            {
+              headers: {
+                Authorization: `Bearer ${authStore.token}`,
+              },
+            },
+          );
+
+          this.favoriteRecipeIds = Array.isArray(idsRes.data?.recipeIds)
+            ? idsRes.data.recipeIds.map((id) => Number(id))
+            : this.favorites
+                .map((recipe) => Number(recipe.id))
+                .filter((id) => Number.isInteger(id));
+        } catch {
+          // Fallback when /favorites/ids is unavailable.
+          this.favoriteRecipeIds = this.favorites
+            .map((recipe) => Number(recipe.id))
+            .filter((id) => Number.isInteger(id));
+        }
+
+        this.clearFavoritesError();
       } catch (err) {
+        this.favorites = [];
+        this.favoriteRecipeIds = [];
+        this.favoritesError =
+          err?.response?.status === 503
+            ? "Saved recipes service is temporarily unavailable."
+            : err?.response?.data?.error || "Unable to load saved recipes.";
         console.error("Error fetching favorites:", err);
       }
     },
@@ -152,8 +218,49 @@ export const useSearchStore = defineStore("search", {
         }
 
         await this.fetchFavorites();
+        this.clearFavoritesError();
       } catch (err) {
+        this.favoritesError =
+          err?.response?.status === 503
+            ? "Saved recipes service is temporarily unavailable."
+            : err?.response?.data?.error || "Unable to update saved recipes.";
         console.error("Error toggling favorite:", err);
+      }
+    },
+
+    async clearFavorites() {
+      const authStore = useAuthStore();
+
+      if (!authStore.token || this.favoriteRecipeIds.length === 0) {
+        this.favorites = [];
+        this.favoriteRecipeIds = [];
+        this.clearFavoritesError();
+        return;
+      }
+
+      const idsToClear = [...this.favoriteRecipeIds];
+
+      try {
+        await Promise.all(
+          idsToClear.map((recipeId) =>
+            axios.delete(`${API_BASE_URL}/api/recipes/favorites/${recipeId}`, {
+              headers: {
+                Authorization: `Bearer ${authStore.token}`,
+              },
+            }),
+          ),
+        );
+
+        this.favorites = [];
+        this.favoriteRecipeIds = [];
+        this.clearFavoritesError();
+      } catch (err) {
+        this.favoritesError =
+          err?.response?.status === 503
+            ? "Saved recipes service is temporarily unavailable."
+            : err?.response?.data?.error || "Unable to clear saved recipes.";
+        await this.fetchFavorites();
+        console.error("Error clearing favorites:", err);
       }
     },
 
@@ -177,7 +284,7 @@ export const useSearchStore = defineStore("search", {
             },
           },
         );
-        this.selectedRecipe = response.data;
+        this.selectedRecipe = this.normalizeRecipe(response.data);
       } catch (err) {
         this.detailError =
           err?.response?.data?.error || "Failed to load recipe details.";
@@ -238,7 +345,9 @@ export const useSearchStore = defineStore("search", {
           },
         });
 
-        this.recipes = response.data.data;
+        this.recipes = (response.data.data || []).map((recipe) =>
+          this.normalizeRecipe(recipe),
+        );
         this.total = response.data.pagination.total;
         this.hasMore = response.data.pagination.hasMore;
       } catch (err) {
@@ -267,6 +376,7 @@ export const useSearchStore = defineStore("search", {
       this.searchQuery = "";
       this.error = "";
       this.detailError = "";
+      this.favoritesError = "";
       this.currentPage = 0;
       this.total = 0;
       this.hasMore = false;

@@ -27,6 +27,7 @@
           {{ item }}
         </button>
       </div>
+      <button class="clear-history" @click="clearHistory">Clear recent</button>
     </div>
   </div>
 </template>
@@ -57,6 +58,10 @@ function quickSearch(item) {
 function clearSearch() {
   query.value = "";
   emit("clear");
+}
+
+function clearHistory() {
+  searchStore.clearSearchHistory();
 }
 </script>
 
@@ -144,6 +149,20 @@ input:disabled {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
+}
+
+.clear-history {
+  border: none;
+  background: transparent;
+  color: #0ea5e9;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0;
+}
+
+.clear-history:hover {
+  text-decoration: underline;
 }
 
 .history-item {
