@@ -3,6 +3,11 @@
     <section v-if="!authStore.isAuthenticated" class="auth-card">
       <div class="auth-layout">
         <div class="auth-copy">
+          <div class="theme-switcher">
+            <button class="theme-toggle" type="button" @click="toggleTheme">
+              {{ themeLabel }}
+            </button>
+          </div>
           <img src="/logo.png" alt="Recipe Finder logo" class="brand-logo" />
           <h1>Recipe Finder</h1>
           <p class="subtitle">
@@ -43,6 +48,9 @@
           <span class="stat-pill"
             >Saved {{ searchStore.favorites.length }}</span
           >
+          <button class="theme-toggle" type="button" @click="toggleTheme">
+            {{ themeLabel }}
+          </button>
           <button class="sign-out" @click="logout">Sign out</button>
         </div>
       </header>
@@ -155,7 +163,7 @@
 </template>
 
 <script setup>
-import { computed, nextTick, onMounted, ref } from "vue";
+import { computed, nextTick, onMounted, ref, watch } from "vue";
 import SearchBar from "./components/SearchBar.vue";
 import FilterBar from "./components/FilterBar.vue";
 import RecipeCard from "./components/RecipeCard.vue";
@@ -170,10 +178,22 @@ import { useAuthStore } from "./store/useAuthStore";
 const searchStore = useSearchStore();
 const authStore = useAuthStore();
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
+const themeStorageKey = "recipeFinderTheme";
+const prefersDarkTheme =
+  typeof window !== "undefined" &&
+  window.matchMedia?.("(prefers-color-scheme: dark)").matches;
 const hasGoogleClientId = computed(() => Boolean(googleClientId));
 const activeTab = ref("explore");
 const modalOpen = ref(false);
 const shareMessage = ref("");
+const theme = ref(
+  localStorage.getItem(themeStorageKey) ||
+    (prefersDarkTheme ? "dark" : "light"),
+);
+
+const themeLabel = computed(() =>
+  theme.value === "dark" ? "Light mode" : "Dark mode",
+);
 
 const displayedRecipes = computed(() =>
   activeTab.value === "explore" ? searchStore.recipes : searchStore.favorites,
@@ -185,6 +205,18 @@ const selectedRecipeIsFavorite = computed(() => {
   }
   return searchStore.isFavorite(searchStore.selectedRecipe.id);
 });
+
+function applyTheme(selectedTheme) {
+  document.documentElement.dataset.theme = selectedTheme;
+  document.documentElement.style.colorScheme = selectedTheme;
+  localStorage.setItem(themeStorageKey, selectedTheme);
+}
+
+function toggleTheme() {
+  theme.value = theme.value === "dark" ? "light" : "dark";
+}
+
+watch(theme, applyTheme, { immediate: true });
 
 function logout() {
   authStore.logout();
@@ -328,9 +360,10 @@ onMounted(async () => {
 .app-card {
   width: min(1080px, 100%);
   border-radius: 20px;
-  border: 1px solid #e2e8f0;
-  background: #ffffff;
-  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.1);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
   padding: 32px;
 }
 
@@ -351,7 +384,17 @@ onMounted(async () => {
   justify-content: center;
   padding: 40px;
   text-align: center;
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  background: linear-gradient(
+    180deg,
+    var(--surface-strong) 0%,
+    var(--surface-muted) 100%
+  );
+}
+
+.theme-switcher {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 8px;
 }
 
 .brand-logo {
@@ -363,7 +406,7 @@ onMounted(async () => {
 
 .auth-media {
   min-height: 100%;
-  background: #0f172a;
+  background: var(--surface-soft);
 }
 
 .login-video {
@@ -376,7 +419,7 @@ onMounted(async () => {
 
 .kicker {
   margin: 0 0 8px;
-  color: #0c4a6e;
+  color: var(--accent-ink);
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -390,7 +433,7 @@ h2 {
 
 .subtitle,
 .email {
-  color: #475569;
+  color: var(--ink-muted);
 }
 
 .google-button-slot {
@@ -404,13 +447,13 @@ h2 {
   border-radius: 12px;
   padding: 10px;
   font-size: 0.9rem;
-  color: #991b1b;
-  background: #fee2e2;
+  color: var(--danger-ink);
+  background: var(--danger-soft);
 }
 
 .alert.warning {
-  color: #7c2d12;
-  background: #ffedd5;
+  color: var(--warning-ink);
+  background: var(--warning-soft);
 }
 
 .app-header {
@@ -420,7 +463,7 @@ h2 {
   gap: 12px;
   margin-bottom: 28px;
   padding-bottom: 16px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border);
 }
 
 .user-block {
@@ -443,8 +486,8 @@ h2 {
 }
 
 .stat-pill {
-  background: #e0f2fe;
-  color: #0c4a6e;
+  background: var(--accent-soft);
+  color: var(--accent-ink);
   border-radius: 999px;
   padding: 6px 10px;
   font-size: 0.85rem;
@@ -469,13 +512,13 @@ h2 {
   gap: 12px;
   margin-bottom: 14px;
   padding: 12px 14px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
   border-radius: 14px;
-  background: #f8fafc;
+  background: var(--surface-muted);
 }
 
 .saved-toolbar-label {
-  color: #475569;
+  color: var(--ink-soft);
   font-weight: 600;
 }
 
@@ -483,7 +526,7 @@ h2 {
   border: none;
   border-radius: 999px;
   padding: 8px 14px;
-  background: #ef4444;
+  background: var(--danger);
   color: #fff;
   font-weight: 700;
   cursor: pointer;
@@ -495,9 +538,9 @@ h2 {
 }
 
 .tab {
-  border: 1px solid #cbd5e1;
-  background: #f8fafc;
-  color: #334155;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-muted);
+  color: var(--ink-soft);
   border-radius: 999px;
   padding: 8px 14px;
   font-weight: 600;
@@ -505,15 +548,34 @@ h2 {
 }
 
 .tab.active {
-  background: #0f172a;
-  color: #f8fafc;
-  border-color: #0f172a;
+  background: var(--ink);
+  color: var(--surface-strong);
+  border-color: var(--ink);
+}
+
+.theme-toggle {
+  border: 1px solid var(--border-strong);
+  background: var(--surface-muted);
+  color: var(--ink-soft);
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    color 0.2s,
+    border-color 0.2s;
+}
+
+.theme-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .sign-out {
   border: none;
-  background: #0f172a;
-  color: #f8fafc;
+  background: var(--ink);
+  color: var(--surface-strong);
   border-radius: 999px;
   padding: 10px 14px;
   font-weight: 600;
@@ -522,7 +584,7 @@ h2 {
 }
 
 .sign-out:hover {
-  background: #334155;
+  background: var(--ink-soft);
 }
 
 .recipes-grid {
@@ -536,8 +598,8 @@ h2 {
   position: fixed;
   bottom: 24px;
   right: 24px;
-  background: #0f172a;
-  color: #f8fafc;
+  background: var(--ink);
+  color: var(--surface-strong);
   border-radius: 10px;
   padding: 10px 14px;
   font-size: 0.9rem;
@@ -590,6 +652,10 @@ h2 {
   .header-actions {
     width: 100%;
     justify-content: space-between;
+  }
+
+  .theme-switcher {
+    justify-content: center;
   }
 }
 </style>

@@ -11,12 +11,12 @@
 defineProps({
   title: {
     type: String,
-    default: "Something went wrong"
+    default: "Something went wrong",
   },
   message: {
     type: String,
-    default: "We encountered an error. Please try again."
-  }
+    default: "We encountered an error. Please try again.",
+  },
 });
 
 defineEmits(["retry"]);
@@ -38,21 +38,21 @@ defineEmits(["retry"]);
 
 h3 {
   margin: 0;
-  color: #991b1b;
+  color: var(--danger-ink);
   font-size: 1.25rem;
 }
 
 p {
   margin: 0;
-  color: #64748b;
+  color: var(--ink-muted);
   max-width: 400px;
 }
 
 .btn-secondary {
   margin-top: 8px;
   padding: 8px 16px;
-  background: #e2e8f0;
-  color: #0f172a;
+  background: var(--surface-soft);
+  color: var(--ink);
   border: none;
   border-radius: 6px;
   font-weight: 600;
@@ -61,6 +61,6 @@ p {
 }
 
 .btn-secondary:hover {
-  background: #cbd5e1;
+  background: var(--border);
 }
 </style>

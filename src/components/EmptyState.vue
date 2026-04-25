@@ -13,16 +13,16 @@
 defineProps({
   title: {
     type: String,
-    default: "No recipes found"
+    default: "No recipes found",
   },
   message: {
     type: String,
-    default: "Try adjusting your filters or search terms."
+    default: "Try adjusting your filters or search terms.",
   },
   showStartButton: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 });
 
 defineEmits(["start"]);
@@ -44,21 +44,21 @@ defineEmits(["start"]);
 
 h3 {
   margin: 0;
-  color: #0f172a;
+  color: var(--ink);
   font-size: 1.25rem;
 }
 
 p {
   margin: 0;
-  color: #64748b;
+  color: var(--ink-muted);
   max-width: 400px;
 }
 
 .btn-primary {
   margin-top: 8px;
   padding: 8px 16px;
-  background: #0ea5e9;
-  color: white;
+  background: var(--accent);
+  color: var(--surface-strong);
   border: none;
   border-radius: 6px;
   font-weight: 600;
@@ -67,6 +67,6 @@ p {
 }
 
 .btn-primary:hover {
-  background: #0369a1;
+  background: var(--accent-hover);
 }
 </style>

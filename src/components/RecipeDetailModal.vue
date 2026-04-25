@@ -106,7 +106,7 @@ defineEmits(["close", "toggle-favorite", "share"]);
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.6);
+  background: var(--overlay);
   display: grid;
   place-items: center;
   z-index: 100;
@@ -117,10 +117,13 @@ defineEmits(["close", "toggle-favorite", "share"]);
   width: min(760px, 100%);
   max-height: 90vh;
   overflow: auto;
-  background: #fff;
+  background: var(--surface-strong);
+  color: var(--ink);
   border-radius: 16px;
   padding: 22px;
   position: relative;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
 }
 
 .hero-image {
@@ -136,7 +139,8 @@ defineEmits(["close", "toggle-favorite", "share"]);
   right: 12px;
   top: 12px;
   border: none;
-  background: #e2e8f0;
+  background: var(--surface-soft);
+  color: var(--ink);
   border-radius: 50%;
   width: 30px;
   height: 30px;
@@ -161,17 +165,17 @@ defineEmits(["close", "toggle-favorite", "share"]);
   padding: 8px 12px;
   font-weight: 600;
   cursor: pointer;
-  background: #e2e8f0;
-  color: #0f172a;
+  background: var(--surface-soft);
+  color: var(--ink);
 }
 
 .btn.primary {
-  background: #0ea5e9;
-  color: #fff;
+  background: var(--accent);
+  color: var(--surface-strong);
 }
 
 .desc {
-  color: #475569;
+  color: var(--ink-soft);
 }
 
 .meta {
@@ -182,7 +186,7 @@ defineEmits(["close", "toggle-favorite", "share"]);
 }
 
 .meta span {
-  background: #f1f5f9;
+  background: var(--surface-soft);
   border-radius: 999px;
   padding: 6px 10px;
   font-size: 0.85rem;
@@ -213,6 +217,6 @@ li strong {
 }
 
 .error {
-  color: #b91c1c;
+  color: var(--danger-ink);
 }
 </style>

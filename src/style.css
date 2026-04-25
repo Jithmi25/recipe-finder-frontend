@@ -1,11 +1,55 @@
 @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;500;700&display=swap");
 
 :root {
+  color-scheme: light;
   --bg-1: #f8fafc;
   --bg-2: #e2e8f0;
+  --surface: rgba(255, 255, 255, 0.9);
+  --surface-strong: #ffffff;
+  --surface-muted: #f8fafc;
+  --surface-soft: #f1f5f9;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
   --ink: #0f172a;
   --ink-soft: #334155;
+  --ink-muted: #64748b;
   --accent: #0ea5e9;
+  --accent-hover: #0369a1;
+  --accent-soft: #dbeafe;
+  --accent-ink: #0c4a6e;
+  --danger: #ef4444;
+  --danger-soft: #fee2e2;
+  --danger-ink: #991b1b;
+  --warning-soft: #ffedd5;
+  --warning-ink: #7c2d12;
+  --overlay: rgba(15, 23, 42, 0.6);
+  --shadow: 0 20px 60px rgba(15, 23, 42, 0.1);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg-1: #020617;
+  --bg-2: #0f172a;
+  --surface: rgba(15, 23, 42, 0.88);
+  --surface-strong: #0f172a;
+  --surface-muted: #111827;
+  --surface-soft: #1e293b;
+  --border: #334155;
+  --border-strong: #475569;
+  --ink: #f8fafc;
+  --ink-soft: #cbd5e1;
+  --ink-muted: #94a3b8;
+  --accent: #38bdf8;
+  --accent-hover: #0ea5e9;
+  --accent-soft: rgba(14, 165, 233, 0.2);
+  --accent-ink: #7dd3fc;
+  --danger: #f87171;
+  --danger-soft: rgba(127, 29, 29, 0.45);
+  --danger-ink: #fecaca;
+  --warning-soft: rgba(146, 64, 14, 0.35);
+  --warning-ink: #fdba74;
+  --overlay: rgba(2, 6, 23, 0.78);
+  --shadow: 0 24px 70px rgba(2, 6, 23, 0.45);
 }
 
 * {
@@ -30,6 +74,18 @@ body {
       transparent 35%
     ),
     linear-gradient(160deg, var(--bg-1), var(--bg-2));
+}
+
+body,
+button,
+input,
+textarea,
+select {
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 h1,

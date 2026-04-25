@@ -13,11 +13,7 @@
       <span class="total-count">({{ total }} total)</span>
     </div>
 
-    <button
-      :disabled="!hasMore"
-      @click="$emit('next')"
-      class="btn-paging"
-    >
+    <button :disabled="!hasMore" @click="$emit('next')" class="btn-paging">
       Next →
     </button>
   </div>
@@ -27,20 +23,20 @@
 defineProps({
   currentPageNo: {
     type: Number,
-    required: true
+    required: true,
   },
   totalPages: {
     type: Number,
-    required: true
+    required: true,
   },
   total: {
     type: Number,
-    required: true
+    required: true,
   },
   hasMore: {
     type: Boolean,
-    required: true
-  }
+    required: true,
+  },
 });
 
 defineEmits(["prev", "next"]);
@@ -58,8 +54,8 @@ defineEmits(["prev", "next"]);
 
 .btn-paging {
   padding: 8px 16px;
-  background: #0f172a;
-  color: white;
+  background: var(--ink);
+  color: var(--surface-strong);
   border: none;
   border-radius: 6px;
   font-weight: 600;
@@ -68,7 +64,7 @@ defineEmits(["prev", "next"]);
 }
 
 .btn-paging:hover:not(:disabled) {
-  background: #334155;
+  background: var(--ink-soft);
 }
 
 .btn-paging:disabled {
@@ -77,13 +73,13 @@ defineEmits(["prev", "next"]);
 }
 
 .page-info {
-  color: #64748b;
+  color: var(--ink-muted);
   font-weight: 500;
   font-size: 0.95rem;
 }
 
 .total-count {
-  color: #94a3b8;
+  color: var(--ink-muted);
   font-size: 0.85rem;
 }
 </style>

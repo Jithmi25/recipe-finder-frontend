@@ -127,10 +127,10 @@ const ingredientsPreview = computed(() => {
 
 <style scoped>
 .recipe-card {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
   padding: 16px;
   border-radius: 8px;
-  background: white;
+  background: var(--surface-strong);
   transition: all 0.2s;
   cursor: pointer;
   display: flex;
@@ -147,8 +147,8 @@ const ingredientsPreview = computed(() => {
 
 .recipe-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
-  border-color: #0ea5e9;
+  box-shadow: var(--shadow);
+  border-color: var(--accent);
 }
 
 .recipe-header {
@@ -161,7 +161,7 @@ const ingredientsPreview = computed(() => {
 h3 {
   margin: 0;
   font-size: 1rem;
-  color: #0f172a;
+  color: var(--ink);
   flex: 1;
 }
 
@@ -175,8 +175,8 @@ h3 {
 .diet-tag {
   display: inline-block;
   padding: 2px 6px;
-  background: #dbeafe;
-  color: #0c4a6e;
+  background: var(--accent-soft);
+  color: var(--accent-ink);
   font-size: 0.7rem;
   border-radius: 3px;
   font-weight: 600;
@@ -186,7 +186,7 @@ h3 {
 .description {
   margin: 0;
   font-size: 0.85rem;
-  color: #64748b;
+  color: var(--ink-muted);
   line-height: 1.4;
 }
 
@@ -196,14 +196,14 @@ h3 {
   flex-wrap: wrap;
   font-size: 0.85rem;
   padding-top: 8px;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--border);
 }
 
 .meta-item {
   display: flex;
   align-items: center;
   gap: 4px;
-  color: #475569;
+  color: var(--ink-soft);
 }
 
 .icon {
@@ -212,12 +212,12 @@ h3 {
 
 .ingredients-preview {
   font-size: 0.8rem;
-  color: #64748b;
+  color: var(--ink-muted);
   padding-top: 6px;
 }
 
 .ingredients-preview strong {
-  color: #334155;
+  color: var(--ink-soft);
 }
 
 .ingredients-preview p {
@@ -241,12 +241,12 @@ h3 {
 }
 
 .action-btn.view {
-  background: #e2e8f0;
-  color: #0f172a;
+  background: var(--surface-soft);
+  color: var(--ink);
 }
 
 .action-btn.save {
-  background: #0ea5e9;
-  color: #fff;
+  background: var(--accent);
+  color: var(--surface-strong);
 }
 </style>

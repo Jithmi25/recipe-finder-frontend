@@ -9,8 +9,8 @@
 defineProps({
   message: {
     type: String,
-    default: "Loading recipes..."
-  }
+    default: "Loading recipes...",
+  },
 });
 </script>
 
@@ -27,8 +27,8 @@ defineProps({
 .spinner {
   width: 40px;
   height: 40px;
-  border: 4px solid #e2e8f0;
-  border-top-color: #0ea5e9;
+  border: 4px solid var(--border);
+  border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -40,7 +40,7 @@ defineProps({
 }
 
 p {
-  color: #64748b;
+  color: var(--ink-muted);
   font-weight: 500;
 }
 </style>

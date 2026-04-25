@@ -50,7 +50,8 @@ function toggleDiet(dietKey) {
   align-items: center;
   gap: 16px;
   padding: 16px;
-  background: #f8fafc;
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
   border-radius: 8px;
   flex-wrap: wrap;
 }
@@ -64,7 +65,7 @@ function toggleDiet(dietKey) {
 
 .label {
   font-weight: 600;
-  color: #334155;
+  color: var(--ink-soft);
   font-size: 0.875rem;
 }
 
@@ -76,40 +77,42 @@ function toggleDiet(dietKey) {
 
 .chip {
   padding: 6px 12px;
-  background: white;
-  border: 1px solid #cbd5e1;
+  background: var(--surface-strong);
+  border: 1px solid var(--border-strong);
   border-radius: 20px;
   cursor: pointer;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #475569;
+  color: var(--ink-soft);
   transition: all 0.2s;
 }
 
 .chip:hover {
-  border-color: #0ea5e9;
-  color: #0ea5e9;
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .chip.active {
-  background: #0ea5e9;
-  color: white;
-  border-color: #0ea5e9;
+  background: var(--accent);
+  color: var(--surface-strong);
+  border-color: var(--accent);
 }
 
 .btn-clear {
   padding: 6px 12px;
-  background: #fee2e2;
-  color: #991b1b;
+  background: var(--danger-soft);
+  color: var(--danger-ink);
   border: none;
   border-radius: 6px;
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition:
+    background-color 0.2s,
+    transform 0.2s;
 }
 
 .btn-clear:hover {
-  background: #fecaca;
+  transform: translateY(-1px);
 }
 </style>
