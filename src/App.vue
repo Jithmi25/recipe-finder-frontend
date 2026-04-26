@@ -245,6 +245,7 @@ async function onFilterChanged() {
 
 async function onClearFilters() {
   searchStore.setSelectedDiets([]);
+  searchStore.setSelectedCategories([]);
   await searchStore.applyFilters();
 }
 
@@ -321,6 +322,7 @@ function initializeGoogleButton(retryCount = 0) {
       nextTick(async () => {
         await Promise.all([
           searchStore.fetchDietTypes(),
+          searchStore.fetchCategories(),
           searchStore.fetchFavorites(),
         ]);
       });
@@ -340,6 +342,7 @@ onMounted(async () => {
   if (authStore.isAuthenticated) {
     await Promise.all([
       searchStore.fetchDietTypes(),
+      searchStore.fetchCategories(),
       searchStore.fetchFavorites(),
     ]);
   } else {

@@ -1,5 +1,21 @@
 <template>
   <div class="filter-bar">
+    <div v-if="categories.length > 0" class="filters">
+      <span class="label">Category:</span>
+      <div class="filter-chips">
+        <button
+          v-for="category in categories"
+          :key="category.key_name"
+          :class="[
+            'chip',
+            { active: selectedCategories.includes(category.key_name) },
+          ]"
+          @click="toggleCategory(category.key_name)"
+        >
+          {{ category.display_name }}
+        </button>
+      </div>
+    </div>
     <div v-if="dietTypes.length > 0" class="filters">
       <span class="label">Diet:</span>
       <div class="filter-chips">
@@ -14,7 +30,7 @@
       </div>
     </div>
     <button
-      v-if="selectedDiets.length > 0"
+      v-if="selectedDiets.length > 0 || selectedCategories.length > 0"
       @click="$emit('clear-filters')"
       class="btn-clear"
     >
@@ -28,8 +44,10 @@ import { computed } from "vue";
 import { useSearchStore } from "../store/useSearchStore";
 
 const searchStore = useSearchStore();
+const categories = computed(() => searchStore.categories);
 const dietTypes = computed(() => searchStore.dietTypes);
 const selectedDiets = computed(() => searchStore.selectedDiets);
+const selectedCategories = computed(() => searchStore.selectedCategories);
 
 const emit = defineEmits(["filter-changed", "clear-filters"]);
 
@@ -39,6 +57,15 @@ function toggleDiet(dietKey) {
     : [...selectedDiets.value, dietKey];
 
   searchStore.setSelectedDiets(updated);
+  emit("filter-changed");
+}
+
+function toggleCategory(categoryKey) {
+  const updated = selectedCategories.value.includes(categoryKey)
+    ? selectedCategories.value.filter((c) => c !== categoryKey)
+    : [...selectedCategories.value, categoryKey];
+
+  searchStore.setSelectedCategories(updated);
   emit("filter-changed");
 }
 </script>

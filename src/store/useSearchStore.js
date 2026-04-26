@@ -12,8 +12,10 @@ export const useSearchStore = defineStore("search", {
     favoriteRecipeIds: [],
     selectedRecipe: null,
     dietTypes: [],
+    categories: [],
     searchQuery: "",
     selectedDiets: [],
+    selectedCategories: [],
     currentPage: 0,
     pageSize: 12,
     total: 0,
@@ -75,6 +77,11 @@ export const useSearchStore = defineStore("search", {
       this.currentPage = 0;
     },
 
+    setSelectedCategories(categories) {
+      this.selectedCategories = categories;
+      this.currentPage = 0;
+    },
+
     addToSearchHistory(query) {
       if (!query || this.searchHistory.includes(query)) return;
       this.searchHistory.unshift(query);
@@ -116,6 +123,23 @@ export const useSearchStore = defineStore("search", {
         this.dietTypes = response.data;
       } catch (err) {
         console.error("Error fetching diet types:", err);
+      }
+    },
+
+    async fetchCategories() {
+      try {
+        const authStore = useAuthStore();
+        const response = await axios.get(
+          `${API_BASE_URL}/api/recipes/categories`,
+          {
+            headers: {
+              Authorization: `Bearer ${authStore.token}`,
+            },
+          },
+        );
+        this.categories = response.data;
+      } catch (err) {
+        console.error("Error fetching categories:", err);
       }
     },
 
@@ -336,6 +360,10 @@ export const useSearchStore = defineStore("search", {
 
         if (this.selectedDiets.length > 0) {
           params.diets = this.selectedDiets.join(",");
+        }
+
+        if (this.selectedCategories.length > 0) {
+          params.categories = this.selectedCategories.join(",");
         }
 
         const response = await axios.get(`${API_BASE_URL}/api/recipes/search`, {
