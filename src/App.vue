@@ -149,16 +149,6 @@
       <div v-if="shareMessage" class="toast">{{ shareMessage }}</div>
     </section>
 
-    <button
-      v-if="showScrollTopButton"
-      class="scroll-top-btn"
-      type="button"
-      aria-label="Scroll back to top"
-      @click="scrollToTop"
-    >
-      ↑
-    </button>
-
     <RecipeDetailModal
       :open="modalOpen"
       :recipe="searchStore.selectedRecipe"
@@ -169,18 +159,21 @@
       @toggle-favorite="onToggleFavorite"
       @share="onShare"
     />
+
+    <button
+      v-if="authStore.isAuthenticated && showScrollTopButton"
+      type="button"
+      class="scroll-top-btn"
+      @click="scrollToTop"
+      aria-label="Scroll back to top"
+    >
+      ↑ Top
+    </button>
   </div>
 </template>
 
 <script setup>
-import {
-  computed,
-  nextTick,
-  onBeforeUnmount,
-  onMounted,
-  ref,
-  watch,
-} from "vue";
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import SearchBar from "./components/SearchBar.vue";
 import FilterBar from "./components/FilterBar.vue";
 import RecipeCard from "./components/RecipeCard.vue";
@@ -234,15 +227,15 @@ function toggleTheme() {
   theme.value = theme.value === "dark" ? "light" : "dark";
 }
 
-function updateScrollTopButtonVisibility() {
+watch(theme, applyTheme, { immediate: true });
+
+function updateScrollTopButton() {
   showScrollTopButton.value = window.scrollY > 320;
 }
 
 function scrollToTop() {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
-
-watch(theme, applyTheme, { immediate: true });
 
 function logout() {
   authStore.logout();
@@ -365,10 +358,8 @@ function initializeGoogleButton(retryCount = 0) {
 }
 
 onMounted(async () => {
-  updateScrollTopButtonVisibility();
-  window.addEventListener("scroll", updateScrollTopButtonVisibility, {
-    passive: true,
-  });
+  updateScrollTopButton();
+  window.addEventListener("scroll", updateScrollTopButton, { passive: true });
 
   if (authStore.isAuthenticated) {
     await Promise.all([
@@ -381,8 +372,8 @@ onMounted(async () => {
   }
 });
 
-onBeforeUnmount(() => {
-  window.removeEventListener("scroll", updateScrollTopButtonVisibility);
+onUnmounted(() => {
+  window.removeEventListener("scroll", updateScrollTopButton);
 });
 </script>
 
@@ -647,21 +638,30 @@ h2 {
   position: fixed;
   right: 24px;
   bottom: 76px;
-  width: 48px;
-  height: 48px;
-  border: none;
-  border-radius: 999px;
-  background: var(--accent);
-  color: #fff;
-  font-size: 1.2rem;
-  font-weight: 800;
-  box-shadow: 0 16px 30px rgba(14, 165, 233, 0.3);
-  cursor: pointer;
   z-index: 20;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  padding: 12px 16px;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow);
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 0.2s,
+    border-color 0.2s,
+    color 0.2s;
 }
 
 .scroll-top-btn:hover {
-  background: var(--accent-hover);
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.scroll-top-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
 }
 
 @media (max-width: 700px) {
@@ -717,16 +717,10 @@ h2 {
     justify-content: center;
   }
 
-  .toast {
-    bottom: 20px;
-    right: 20px;
-  }
-
   .scroll-top-btn {
-    right: 20px;
-    bottom: 70px;
-    width: 44px;
-    height: 44px;
+    right: 16px;
+    bottom: 68px;
+    padding: 10px 14px;
   }
 }
 </style>
