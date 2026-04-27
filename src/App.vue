@@ -149,6 +149,16 @@
       <div v-if="shareMessage" class="toast">{{ shareMessage }}</div>
     </section>
 
+    <button
+      v-if="showScrollTopButton"
+      class="scroll-top-btn"
+      type="button"
+      aria-label="Scroll back to top"
+      @click="scrollToTop"
+    >
+      ↑
+    </button>
+
     <RecipeDetailModal
       :open="modalOpen"
       :recipe="searchStore.selectedRecipe"
@@ -163,7 +173,14 @@
 </template>
 
 <script setup>
-import { computed, nextTick, onMounted, ref, watch } from "vue";
+import {
+  computed,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  watch,
+} from "vue";
 import SearchBar from "./components/SearchBar.vue";
 import FilterBar from "./components/FilterBar.vue";
 import RecipeCard from "./components/RecipeCard.vue";
@@ -186,6 +203,7 @@ const hasGoogleClientId = computed(() => Boolean(googleClientId));
 const activeTab = ref("explore");
 const modalOpen = ref(false);
 const shareMessage = ref("");
+const showScrollTopButton = ref(false);
 const theme = ref(
   localStorage.getItem(themeStorageKey) ||
     (prefersDarkTheme ? "dark" : "light"),
@@ -214,6 +232,14 @@ function applyTheme(selectedTheme) {
 
 function toggleTheme() {
   theme.value = theme.value === "dark" ? "light" : "dark";
+}
+
+function updateScrollTopButtonVisibility() {
+  showScrollTopButton.value = window.scrollY > 320;
+}
+
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 watch(theme, applyTheme, { immediate: true });
@@ -339,6 +365,11 @@ function initializeGoogleButton(retryCount = 0) {
 }
 
 onMounted(async () => {
+  updateScrollTopButtonVisibility();
+  window.addEventListener("scroll", updateScrollTopButtonVisibility, {
+    passive: true,
+  });
+
   if (authStore.isAuthenticated) {
     await Promise.all([
       searchStore.fetchDietTypes(),
@@ -348,6 +379,10 @@ onMounted(async () => {
   } else {
     initializeGoogleButton();
   }
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("scroll", updateScrollTopButtonVisibility);
 });
 </script>
 
@@ -608,6 +643,27 @@ h2 {
   font-size: 0.9rem;
 }
 
+.scroll-top-btn {
+  position: fixed;
+  right: 24px;
+  bottom: 76px;
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 800;
+  box-shadow: 0 16px 30px rgba(14, 165, 233, 0.3);
+  cursor: pointer;
+  z-index: 20;
+}
+
+.scroll-top-btn:hover {
+  background: var(--accent-hover);
+}
+
 @media (max-width: 700px) {
   .auth-card {
     padding: 0;
@@ -659,6 +715,18 @@ h2 {
 
   .theme-switcher {
     justify-content: center;
+  }
+
+  .toast {
+    bottom: 20px;
+    right: 20px;
+  }
+
+  .scroll-top-btn {
+    right: 20px;
+    bottom: 70px;
+    width: 44px;
+    height: 44px;
   }
 }
 </style>
