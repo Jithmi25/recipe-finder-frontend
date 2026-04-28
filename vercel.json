@@ -9,5 +9,14 @@
         }
       ]
     }
-  ]
+  ],
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://recipefinder-1-syd5.onrender.com/api/:path*"
+    }
+  ],
+  "env": {
+    "VITE_API_BASE_URL": "https://recipefinder-1-syd5.onrender.com"
+  }
 }
