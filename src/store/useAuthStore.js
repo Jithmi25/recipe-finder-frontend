@@ -5,7 +5,7 @@ const TOKEN_KEY = "recipeFinderToken";
 const USER_KEY = "recipeFinderUser";
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
-  (import.meta.env.DEV ? "http://localhost:3000" : "");
+  "https://recipefinder-1-syd5.onrender.com";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
