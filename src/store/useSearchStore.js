@@ -2,9 +2,10 @@ import { defineStore } from "pinia";
 import axios from "axios";
 import { useAuthStore } from "./useAuthStore";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  "https://recipefinder-1-syd5.onrender.com";
+const API_BASE_URL = import.meta.env.DEV
+  ? "http://localhost:3000"
+  : import.meta.env.VITE_API_BASE_URL ||
+    "https://recipefinder-1-syd5.onrender.com";
 
 export const useSearchStore = defineStore("search", {
   state: () => ({
