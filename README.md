@@ -6,8 +6,6 @@ Recipe Finder is a Vue 3 single-page application for discovering, filtering, sav
 
 - Google sign-in with a persistent user session
 - Recipe search and filtering by diet type
-- Recipe cards with pagination and detail modal
-- Save and remove favorite recipes
 - Saved recipes view with bulk clear support
 - Share recipe details through the browser share sheet or clipboard fallback
 - Firebase integration for app services configured through environment variables
